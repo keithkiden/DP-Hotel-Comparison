@@ -1,0 +1,34 @@
+{
+  "manifest_version": 2,
+
+  "name": "Hotel Price Comparison",
+  "description": "Hotel Price Comparison",
+  "version": "1.0",
+
+  "content_security_policy": "script-src 'self'; object-src 'self';",
+
+  "permissions": [
+    "http://w.51ping.com/",
+   "http://code.highcharts.com/",
+    "http://code.highcharts.com/"
+  ],
+
+  "content_scripts": [
+    {
+      "matches": ["http://hotel.elong.com/*"],
+      "js": ["jquery.min.js", "highcharts.js", "elong.js"],
+      "run_at": "document_end"
+    }
+    ,
+    {
+      "matches": ["http://hotels.ctrip.com/*"],
+      "js": ["jquery.min.js", "highcharts.js"],
+      "run_at": "document_end"
+    }
+  ],
+
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_popup": "popup.html"
+  }
+}
