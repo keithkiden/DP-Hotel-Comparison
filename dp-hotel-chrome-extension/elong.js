@@ -17,7 +17,16 @@ $(function() {
 });
 
 $(function() {
-    $(document.body).append('<div id="dp_price_chart_container" style="position: absolute; width: 350px; height:150px; top: 229px; left: 784.5px; z-index: 2147483647;"></div>');
+    $(document.body).append('<div id="dp_price_chart_container"' 
+      + 'style="position: absolute; '
+      + 'width: 350px; '
+      + 'height:150px; '
+      + 'top: 229px; '
+      + 'left: 784.5px; '
+      + 'display: none; '
+      // + 'border: 1px solid;'
+      // + 'border-color: #f60;'
+      + 'z-index: 2147483647;"></div>');
 
     var options = {
         chart: {
@@ -48,3 +57,23 @@ $(function() {
 
     var chart = new Highcharts.Chart(options);
 });
+
+$(function bindBtn(){
+    var btn = null;
+    $(".btn").each(function(index){
+            if (null == btn && $(this).text() == '立即预订') {
+                btn = $(this);
+            };
+        });
+
+    var chartDiv = $('#dp_price_chart_container');
+    btn.hover(
+        function(){
+            chartDiv.show();
+        },
+        function(){
+            chartDiv.hide();
+        }
+    );
+});
+    
