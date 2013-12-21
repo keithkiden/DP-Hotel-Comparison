@@ -21,8 +21,8 @@ $(function() {
       + 'style="position: absolute; '
       + 'width: 350px; '
       + 'height:150px; '
-      + 'top: 227px; '
-      + 'left: 784.5px; '
+      + 'top: 350px; '
+      + 'left: 553.5px; '
       + 'display: none; '
       // + 'border: 1px solid;'
       // + 'border-color: #f60;'
@@ -51,7 +51,7 @@ $(function() {
     };
 
     options.series.push({
-        name: '艺龙',
+        name: '携程',
         data: [345,232,343,343,453,123,342]
     });
 
@@ -59,13 +59,7 @@ $(function() {
 });
 
 $(function bindBtn(){
-    var btn = null;
-    $(".btn").each(function(index){
-            if (null == btn && $(this).text() == '立即预订') {
-                btn = $(this);
-            };
-        });
-
+    var btn = $('#btn_book_now');
     var chartDiv = $('#dp_price_chart_container');
     btn.hover(
         function(){
@@ -76,4 +70,3 @@ $(function bindBtn(){
         }
     );
 });
-    

@@ -22,7 +22,7 @@
     ,
     {
       "matches": ["http://hotels.ctrip.com/*"],
-      "js": ["jquery.min.js", "highcharts.js"],
+      "js": ["jquery.min.js", "highcharts.js", "ctrip.js"],
       "run_at": "document_end"
     }
   ],
