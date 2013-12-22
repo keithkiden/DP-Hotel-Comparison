@@ -89,14 +89,20 @@ $(function(){
 
 $(function bindBtn(){
     var btn = $('#btn_book_now');
-    var dptDiv = $('#dp_container');
+    var dpDiv = $('#dp_container');
     btn.hover(
         function(){
-            dptDiv.show();
+            dpDiv.show();
             appendChart();
         },
         function(){
-            dptDiv.hide();
+        }
+    );
+    dpDiv.hover(
+        function(){
+        },
+        function(){                
+            dpDiv.hide();
         }
     );
 });

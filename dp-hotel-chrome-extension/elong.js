@@ -122,6 +122,13 @@ function bindBtn(){
             appendChart();
         },
         function(){
+        }
+    );
+    dpDiv.hover(
+        function(){
+            dpDiv.show();
+        },
+        function(){
             dpDiv.hide();
         }
     );
