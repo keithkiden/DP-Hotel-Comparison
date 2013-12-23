@@ -8,7 +8,7 @@ $(function() {
     + 'height:100px;";>'
     + '</div>';
 
-    var prict = '<div id="dp_ota_price_container"'
+    var price = '<div id="dp_ota_price_container"'
     + 'style="position: relative; '
     + 'width: 344px; '
     + 'margin-bottom: 2px; '
@@ -22,19 +22,20 @@ $(function() {
 
     var outteContainer = '<div id="dp_container"' 
     + 'style="position: absolute; '
-    + 'width: 350px; '
-    + 'height:190px; '
-    + 'top: 227px; '
+    + 'width: 356px; '
+    + 'height:196px; '
+    + 'padding-top: 3px; '
+    + 'top: 223px; '
     + 'left: 776.5px; '
     + 'background: #ffffff;'
     + 'display: none; '
-    + 'border: 3px solid;'
-    + 'border-color: #F08006;'
     + 'z-index: 2147483647;">'
+    + '<div style="border: 3px solid; border-color: #F08006;">'
     + chartContainer
-    + prict
-    + prict
-    + prict
+    + price
+    + price
+    + price
+    + '</div>'
     + '</div>';
 
     $(document.body).append(outteContainer);
@@ -64,7 +65,7 @@ $(function(){
         yAxis: {
             title: {text: null},
             labels: "",
-            minorTickInterval: 50,
+            minorTickInterval: "auto",
             showFirstLabel: false
         },
         xAxis: {
@@ -84,7 +85,7 @@ $(function(){
 
     options.series.push({
         name: '艺龙',
-        data: [['12/20',345],['12/21',232],['12/22',343],['12/23',343],['12/24',453],['12/25',123],['12/26',342]]
+        data: [['12/20',345], ['12/21',232], ['12/22',343], ['12/23',343], ['12/24',453], ['12/25',123], ['12/26',342]]
     });
 })
 
@@ -122,6 +123,7 @@ function bindBtn(){
             appendChart();
         },
         function(){
+            dpDiv.hide();
         }
     );
     dpDiv.hover(

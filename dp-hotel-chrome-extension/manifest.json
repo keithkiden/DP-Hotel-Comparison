@@ -9,8 +9,7 @@
 
   "permissions": [
     "http://w.51ping.com/",
-   "http://code.highcharts.com/",
-    "http://code.highcharts.com/"
+    "http://w.alpha.dp/"
   ],
 
   "content_scripts": [
