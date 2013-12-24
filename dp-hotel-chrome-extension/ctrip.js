@@ -1,15 +1,35 @@
 var options = null;
 
-$(function() {
+$(function(){
     var chartContainer = '<div id="dp_price_chart_container"'
     + 'style="position: relative; '
     + 'width: 350px; '
+    + 'text-align: center; '
+    + 'line-height: 100px; '
     + 'height:100px;";>'
+    + '正在加载...'
     + '</div>';
 
-    var promo =  buildIcon('促', '江浙沪大促', '#84b328');
-    var refund =  buildIcon('返', '180', '#ffb12a');
+    var outterContainer = '<div id="dp_container"' 
+    + 'style="position: absolute; '
+    + 'width: 356px; '
+    + 'padding-top: 3px; '
+    + 'top: 347px; '
+    + 'left: 546.5px; '
+    + 'background: #ffffff;'
+    // + 'display: none; '
+    + 'z-index: 2147483647;">'
+    + '<div style="padding-top: 0px; border: 3px solid; border-color: #F08006;">'
+    + chartContainer
+    + '<div id="priceBlock">'
+    + '</div>'
+    + '</div>'
+    + '</div>';
 
+    $(document.body).append(outterContainer);
+});
+
+function buildPrice(price, promo, refund){
     var priceBtn = '<div style="align-content: right; '
     + 'display: inline; '
     + 'font-weight: bold; font-size: 16px; '
@@ -24,7 +44,7 @@ $(function() {
     + 'border-radius: 3px; '
     + 'box-shadow: 1px 1px 1px #888888; '
     + '">￥'
-    + '189'
+    + price
     + '</div>';
 
     var onePrice = '<div style="padding-left: 15px;'
@@ -36,7 +56,7 @@ $(function() {
     + priceBtn
     + '</div>'
 
-    var price = '<a style="text-decoration: none; color: #000000;" href="">'
+    var priceContent = '<a style="text-decoration: none; color: #000000;" href="">'
     + '<div id="dp_ota_price_container"'
     + 'style="position: relative; '
     + 'width: 344px; '
@@ -51,23 +71,8 @@ $(function() {
     + '</div>';
     + '</a>';
 
-    var outteContainer = '<div id="dp_container"' 
-    + 'style="position: absolute; '
-    + 'width: 356px; '
-    + 'padding-top: 3px; '
-    + 'top: 347px; '
-    + 'left: 546.5px; '
-    + 'background: #ffffff;'
-    + 'display: none; '
-    + 'z-index: 2147483647;">'
-    + '<div style="padding-top: 0px; border: 3px solid; border-color: #F08006;">'
-    + chartContainer
-    + price
-    + '</div>'
-    + '</div>';
-
-    $(document.body).append(outteContainer);
-});
+    return priceContent;
+}
 
 function buildIcon(logoText, content, color){
     var iconContent = '<div style="display:inline;'  
@@ -101,90 +106,28 @@ function buildIcon(logoText, content, color){
     return icon;
 }
 
-function buildPrice(){
-
+function appendPrice(){
+    var promo =  buildIcon('促', '江浙沪大促', '#84b328');
+    var refund =  buildIcon('返', '180', '#ffb12a');
+    var price = buildPrice(277, promo, refund);
+    $('#priceBlock').html('');
+    $('#priceBlock').html(price);
 }
 
 $(function(){
-    var priceUrl = 'http://w.alpha.dp/index/hotel/ajax/priceTrend?currentURL=' + window.location.origin + window.location.pathname;
-    $.getJSON(priceUrl, function(json){
-        if(json.code == 200){
-            var trends = json.msg[0].trend;
-            var otaName = json.msg[0].otaName;
-            var otaData = [];
-            var maxPrice = null;
-            var minPrice = null;
-            $.each(trends, function(index, value){
-                var formatdate = new String(value.priceDate).substring(5, 10).replace('-','/');
-                var oneDayPrice = [formatdate, value.lowPrice];
-                maxPrice = null == maxPrice ? value.lowPrice : value.lowPrice > maxPrice ? value.lowPrice : maxPrice;
-                minPrice = null == minPrice ? value.lowPrice : value.lowPrice < minPrice ? value.lowPrice : minPrice;
-                otaData.push(oneDayPrice);
-            })
-            var interval = maxPrice == minPrice ? maxPrice/10 : (maxPrice - minPrice)/10;
-            drawChart(otaName, otaData, interval);
-        }
-    });
-})
+    bindBtn($('#btn_book_now'));
+});
 
-function drawChart(otaName, otaData){
-    options = {
-        chart: {
-            renderTo: 'dp_price_chart_container',
-            type: 'line',
-            margin: [4, 4, 18, 4]
-        },
-        title: {
-            text: null
-        },
-        plotOptions: {
-            series: {
-                color: '#F08006',
-                dataLabels: {
-                    enabled: true
-                },
-            }
-        },
-        tooltip: {
-            crosshairs: [true, true]
-        },
-        yAxis: {
-            title: {text: null},
-            labels: "",
-            minorTickInterval: "auto",
-            showFirstLabel: false
-        },
-        xAxis: {
-            type: 'category',
-            minorTickInterval: 1,
-            gridLineWidth: 1,
-            tickWidth: 0,
-        },
-        legend: {
-            enabled: false
-        },
-        credits: {  
-            enabled: false  
-        }, 
-        series: []
-    };
-
-    options.series.push({
-        name: otaName,
-        data: otaData
-    });
-}
-
-$(function bindBtn(){
-    var btn = $('#btn_book_now');
+function bindBtn(btn){
     var dpDiv = $('#dp_container');
     btn.hover(
         function(){
             dpDiv.show();
             appendChart();
+            appendPrice();
         },
         function(){
-            dpDiv.hide();
+            // dpDiv.hide();
         }
     );
     dpDiv.hover(
@@ -192,12 +135,80 @@ $(function bindBtn(){
             dpDiv.show();
         },
         function(){                
-            dpDiv.hide();
+            // dpDiv.hide();
         }
     );
-});
+}
 
 function appendChart(){
+
+    function initialChart(){
+        options = {
+            chart: {
+                renderTo: 'dp_price_chart_container',
+                type: 'line',
+                margin: [4, 4, 18, 4]
+            },
+            title: {
+                text: null
+            },
+            plotOptions: {
+                series: {
+                    color: '#F08006',
+                    dataLabels: {
+                        enabled: true
+                    },
+                }
+            },
+            tooltip: {
+                crosshairs: [true, true]
+            },
+            yAxis: {
+                title: {text: null},
+                labels: "",
+                minorTickInterval: "auto",
+                showFirstLabel: false
+            },
+            xAxis: {
+                type: 'category',
+                minorTickInterval: 1,
+                gridLineWidth: 1,
+                tickWidth: 0,
+            },
+            legend: {
+                enabled: false
+            },
+            credits: {  
+                enabled: false  
+            }, 
+            series: []
+        };
+    }
+
+    function drawChart(otaName, otaData){
+        initialChart();
+        options.series.push({
+            name: otaName,
+            data: otaData
+        });
+    }
+
+    if(null == options || $('#dp_price_chart_container').text() == '正在加载...'){
+        var priceUrl = 'http://w.alpha.dp/index/hotel/ajax/priceTrend?currentURL=' + window.location.origin + window.location.pathname;
+        $.getJSON(priceUrl, function(json){
+            if(json.code == 200){
+                var trends = json.msg[0].trend;
+                var otaName = json.msg[0].otaName;
+                var otaData = [];
+                $.each(trends, function(index, value){
+                    var formatdate = new String(value.priceDate).substring(5, 10).replace('-','/');
+                    var oneDayPrice = [formatdate, value.lowPrice];
+                    otaData.push(oneDayPrice);
+                })
+                drawChart(otaName, otaData);
+            }
+        });
+    }
     if(null == options) return;
     var chart = new Highcharts.Chart(options);
 }
