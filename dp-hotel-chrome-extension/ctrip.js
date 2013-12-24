@@ -1,4 +1,7 @@
 var options = null;
+var xposition = '347px;';
+var yposition = '546.5px;';
+var otaId = 2;
 
 $(function(){
     var chartContainer = '<div id="dp_price_chart_container"'
@@ -14,8 +17,8 @@ $(function(){
     + 'style="position: absolute; '
     + 'width: 356px; '
     + 'padding-top: 3px; '
-    + 'top: 347px; '
-    + 'left: 546.5px; '
+    + 'top: ' + xposition
+    + 'left: ' + yposition
     + 'background: #ffffff;'
     // + 'display: none; '
     + 'z-index: 2147483647;">'
@@ -29,7 +32,7 @@ $(function(){
     $(document.body).append(outterContainer);
 });
 
-function buildPrice(price, promo, refund){
+function buildPrice(otaName ,price, promo, refund){
     var priceBtn = '<div style="align-content: right; '
     + 'display: inline; '
     + 'font-weight: bold; font-size: 16px; '
@@ -50,7 +53,7 @@ function buildPrice(price, promo, refund){
     var onePrice = '<div style="padding-left: 15px;'
     + 'display: inline;'
     + '">'
-    + '艺龙网'
+    + otaName
     + promo
     + refund
     + priceBtn
@@ -109,7 +112,7 @@ function buildIcon(logoText, content, color){
 function appendPrice(){
     var promo =  buildIcon('促', '江浙沪大促', '#84b328');
     var refund =  buildIcon('返', '180', '#ffb12a');
-    var price = buildPrice(277, promo, refund);
+    var price = buildPrice('艺龙网' ,277, promo, refund);
     $('#priceBlock').html('');
     $('#priceBlock').html(price);
 }
@@ -193,21 +196,30 @@ function appendChart(){
         });
     }
 
-    if(null == options || $('#dp_price_chart_container').text() == '正在加载...'){
-        var priceUrl = 'http://w.alpha.dp/index/hotel/ajax/priceTrend?currentURL=' + window.location.origin + window.location.pathname;
+    if(null == options || $('#dp_price_chart_container').text() == '正在加载...' || $('#dp_price_chart_container').text() == '暂无价格'){
+        $('#dp_price_chart_container').html('正在加载...');
+		var priceUrl = 'http://w.alpha.dp/index/hotel/ajax/priceTrend?currentURL=' + window.location.origin + window.location.pathname;
         $.getJSON(priceUrl, function(json){
             if(json.code == 200){
-                var trends = json.msg[0].trend;
-                var otaName = json.msg[0].otaName;
-                var otaData = [];
-                $.each(trends, function(index, value){
-                    var formatdate = new String(value.priceDate).substring(5, 10).replace('-','/');
-                    var oneDayPrice = [formatdate, value.lowPrice];
-                    otaData.push(oneDayPrice);
-                })
-                drawChart(otaName, otaData);
-            }
-        });
+				$.each(json.msg, function(index, value){
+					if(value.otaId == otaId){
+						var trends = value.trend;
+						var otaName = value.otaName;
+						var otaData = [];
+						$.each(trends, function(index, value){
+							var formatdate = new String(value.priceDate).substring(5, 10).replace('-','/');
+							var oneDayPrice = [formatdate, value.lowPrice];
+							otaData.push(oneDayPrice);
+						});
+						drawChart(otaName, otaData);
+					}
+				})
+            } else {
+				$('#dp_price_chart_container').html('暂无价格');
+			}
+        }).error(function(){
+			$('#dp_price_chart_container').html('暂无价格');
+		});
     }
     if(null == options) return;
     var chart = new Highcharts.Chart(options);
