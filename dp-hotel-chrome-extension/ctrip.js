@@ -20,7 +20,7 @@ $(function(){
     + 'top: ' + xposition
     + 'left: ' + yposition
     + 'background: #ffffff;'
-    // + 'display: none; '
+    + 'display: none; '
     + 'z-index: 2147483647;">'
     + '<div style="padding-top: 0px; border: 3px solid; border-color: #F08006;">'
     + chartContainer
@@ -32,7 +32,7 @@ $(function(){
     $(document.body).append(outterContainer);
 });
 
-function buildPrice(otaName ,price, promo, refund){
+function buildPrice(otaName, price, promo, refund, href){
     var priceBtn = '<div style="align-content: right; '
     + 'display: inline; '
     + 'font-weight: bold; font-size: 16px; '
@@ -46,21 +46,21 @@ function buildPrice(otaName ,price, promo, refund){
     + 'margin-left: 40px; '
     + 'border-radius: 3px; '
     + 'box-shadow: 1px 1px 1px #888888; '
-    + '">￥'
-    + price
+    + '">'
+    + (0 < price ? ("￥" + price) : '优惠价')
     + '</div>';
 
     var onePrice = '<div style="padding-left: 15px;'
     + 'display: inline;'
     + '">'
     + otaName
-    + promo
-    + refund
+    + (null == promo ? '<div style="padding-left: 100px; display: inline;"></div>' : promo)
+    + (null == refund ? '<div style="padding-left: 80px; display: inline;"></div>' : refund)
     + priceBtn
-    + '</div>'
+    + '</div>';
 
-    var priceContent = '<a style="text-decoration: none; color: #000000;" href="">'
-    + '<div id="dp_ota_price_container"'
+    var priceContent = '<a style="text-decoration: none; color: #000000;" target="_blank" href=' + href + '>'
+    + '<div class="dp_ota_price_container"'
     + 'style="position: relative; '
     + 'width: 344px; '
     + 'margin-bottom: 2px; '
@@ -71,7 +71,7 @@ function buildPrice(otaName ,price, promo, refund){
     + 'line-height: 50px; '
     + 'height:50px;";>'
     + onePrice
-    + '</div>';
+    + '</div>'
     + '</a>';
 
     return priceContent;
@@ -79,12 +79,12 @@ function buildPrice(otaName ,price, promo, refund){
 
 function buildIcon(logoText, content, color){
     var iconContent = '<div style="display:inline;'  
-    + 'background: #ffffff; ' 
-    + 'padding-top: 1px; '
-    + 'padding-left: 2px; '
-    + 'padding-right: 2px; '
-    + 'padding-bottom: 1px; '
-    + 'margin-left: 4px; '
+    + 'background: #ffffff; '
+    + 'border: 1px solid ' + color + '; '
+    + 'padding-top: 2px; '
+    + 'padding-left: 3px; '
+    + 'padding-right: 3px; '
+    + 'padding-bottom: 2px; '
     + 'color: ' + color + '; '
     + '">'
     + content
@@ -98,23 +98,50 @@ function buildIcon(logoText, content, color){
     + 'width: 50px; '
     + 'font-size: 13px; '
     + 'padding-top: 1px; '
-    + 'padding-left: 2px; '
+    + 'padding-left: 2.5px; '
+    + 'padding-right: 2.5px; '
     + 'padding-bottom: 1px; '
     + 'color: #ffffff; '
     + '">'
     + logoText
-    + iconContent
     + '</div>';
 
-    return icon;
+    return icon + (null == content || content == '' ? '' : iconContent);
 }
 
 function appendPrice(){
-    var promo =  buildIcon('促', '江浙沪大促', '#84b328');
-    var refund =  buildIcon('返', '180', '#ffb12a');
-    var price = buildPrice('艺龙网' ,277, promo, refund);
-    $('#priceBlock').html('');
-    $('#priceBlock').html(price);
+    if($('#priceBlock').text() == ''){
+        var priceUrl = 'http://w.alpha.dp/index/hotel/ajax/otaCompare?currentURL=' + window.location.origin + window.location.pathname;
+        $.getJSON(priceUrl, function(json){
+            if(json.code == 200){
+                var entirePriceBlock = '';
+                $.each(json.msg, function(index, value){
+                    if(value.otaID != otaId){
+                        var promoDiv = null;
+                        var refundDiv = null;
+                        var promoArray = jQuery.parseJSON(value.promo);
+                        $.each(promoArray, function(index, value){
+                            if(value.type == 4) refundDiv = buildIcon('返', value.discount, '#ffb12a');
+                            if(value.type == 3) promoDiv = buildIcon('促', value.description, '#84b328');
+                        });
+                        entirePriceBlock = entirePriceBlock + buildPrice(value.otaName, value.avgLowPrice, promoDiv, refundDiv, value.url);
+                    }
+                });
+                if(entirePriceBlock != ''){
+                    $('#priceBlock').html('');
+                    $('#priceBlock').html(entirePriceBlock);
+                }
+                $('.dp_ota_price_container').hover(
+                    function(){
+                        $(this).css("background", "#ececec");
+                    },
+                    function(){                
+                        $(this).css("background", "#f3f3f3");
+                    }
+                );
+            }
+        });
+    }
 }
 
 $(function(){
@@ -130,7 +157,7 @@ function bindBtn(btn){
             appendPrice();
         },
         function(){
-            // dpDiv.hide();
+            dpDiv.hide();
         }
     );
     dpDiv.hover(
@@ -138,7 +165,7 @@ function bindBtn(btn){
             dpDiv.show();
         },
         function(){                
-            // dpDiv.hide();
+            dpDiv.hide();
         }
     );
 }
@@ -196,31 +223,42 @@ function appendChart(){
         });
     }
 
-    if(null == options || $('#dp_price_chart_container').text() == '正在加载...' || $('#dp_price_chart_container').text() == '暂无价格'){
+    if(null == options || $('#dp_price_chart_container').text() == '正在加载...' || $('#dp_price_chart_container').text() == '<a id="dp_refreshchart">暂时无法获取价格走势</a>'){
         $('#dp_price_chart_container').html('正在加载...');
 		var priceUrl = 'http://w.alpha.dp/index/hotel/ajax/priceTrend?currentURL=' + window.location.origin + window.location.pathname;
         $.getJSON(priceUrl, function(json){
             if(json.code == 200){
 				$.each(json.msg, function(index, value){
-					if(value.otaId == otaId){
+					if(value.otaID == otaId){
 						var trends = value.trend;
 						var otaName = value.otaName;
 						var otaData = [];
 						$.each(trends, function(index, value){
 							var formatdate = new String(value.priceDate).substring(5, 10).replace('-','/');
-							var oneDayPrice = [formatdate, value.lowPrice];
+							var oneDayPrice = [formatdate, Math.round(value.lowPrice)];
 							otaData.push(oneDayPrice);
 						});
+                        $('#dp_price_chart_container').html('');
 						drawChart(otaName, otaData);
+                        if(null == options) return;
+                        var chart = new Highcharts.Chart(options);
 					}
-				})
+				});
             } else {
-				$('#dp_price_chart_container').html('暂无价格');
+                refresh();
 			}
         }).error(function(){
-			$('#dp_price_chart_container').html('暂无价格');
+            refresh();
 		});
     }
+
+    function refresh(){
+        $('#dp_price_chart_container').html('<a id="dp_refreshchart" style="cursor: pointer;">暂时无法获取价格走势</a>');
+        $('#dp_refreshchart').click(function(){
+            appendChart();
+        });
+    }
+
     if(null == options) return;
     var chart = new Highcharts.Chart(options);
 }
