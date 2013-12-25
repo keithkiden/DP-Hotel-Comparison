@@ -1,6 +1,6 @@
 var btn = null;
 var options = null;
-var xposition = '223px;';
+var xposition = '215px;';
 var yposition = '776.5px; ';
 var otaId = 1;
 
