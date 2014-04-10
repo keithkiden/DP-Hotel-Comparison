@@ -4,7 +4,7 @@ var options2 = null;
 var xposition = '215px;';
 var yposition = '776.5px; ';
 var otaId = 1;
-var host = "http://w.51ping.com";
+var host = "http://www.dianping.com";
 var dayNum = 15;
 
 $(document.body).append(buildOuterContainer(xposition, yposition));
