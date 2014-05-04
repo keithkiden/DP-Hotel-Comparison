@@ -28,6 +28,12 @@
       "js": ["jquery.min.js", "highcharts.js", "ctrip.js"],
       "run_at": "document_end"
     }
+    ,
+    {
+      "matches": ["http://www.qmango.com/*"],
+      "js": ["jquery.min.js", "highcharts.js", "qmango.js"],
+      "run_at": "document_end"
+    }
   ],
 
   "browser_action": {
