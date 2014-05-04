@@ -10,7 +10,7 @@ var dayNum = 15;
 function buildXYpos(){
     var btnDiv =$('.chaxun_button');
     xposition = btnDiv[0].offsetTop -200 +'px;';
-    yposition = btnDiv[0].offsetLeft -360 +'px;';
+    yposition = btnDiv[0].offsetLeft -356 +'px;';
 }
 $(buildXYpos());
 
